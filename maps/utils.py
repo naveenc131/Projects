@@ -31,7 +31,7 @@ def key_of_min_value(d):
     """
     # BEGIN Question 0
     "*** REPLACE THIS LINE ***"
-    return min('REPLACE THIS WITH YOUR SOLUTION')
+    return [(key,value) for key , value in d.items() if value == min(d.values())][0]
     # END Question 0
 
 def zip(*sequences):
@@ -65,7 +65,7 @@ def enumerate(s, start=0):
     # BEGIN Question 0
     "*** REPLACE THIS LINE ***"
     # END Question 0
-
+    return [[i, s[i - start]] for i in range(start, start + len(s))]
 def distance(pos1, pos2):
     """Returns the Euclidean distance between pos1 and pos2, which are pairs.
 

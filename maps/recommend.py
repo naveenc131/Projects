@@ -18,10 +18,10 @@ def find_closest(location, centroids):
     >>> find_closest([3.0, 4.0], [[0.0, 0.0], [2.0, 3.0], [4.0, 3.0], [5.0, 5.0]])
     [2.0, 3.0]
     """
-    # BEGIN Question 3
-    "*** REPLACE THIS LINE ***"
-    # END Question 3
-
+    dist = [distance(location, i) for i in centroids]
+    result = [item for item in centroids if distance(location, item) == min(dist)][0]
+    return result
+   
 
 def group_by_first(pairs):
     """Return a list of pairs that relates each unique key in the [key, value]
@@ -47,16 +47,17 @@ def group_by_centroid(restaurants, centroids):
     restaurants should appear once in the result, along with the other
     restaurants closest to the same centroid.
     """
-    # BEGIN Question 4
-    "*** REPLACE THIS LINE ***"
-    # END Question 4
+    return group_by_first([[find_closest(restaurant_location(r), centroids),
+                            r] for r in restaurants ])
 
 
 def find_centroid(cluster):
     """Return the centroid of the locations of the restaurants in cluster."""
-    # BEGIN Question 5
-    "*** REPLACE THIS LINE ***"
-    # END Question 5
+    locate = [restaurant_location(i) for i in cluster]
+    latitude = [i[0] for i in locate]
+    longitude =[i[1] for i in locate]
+    return[mean(latitude),mean(longitude)]
+    
 
 
 def k_means(restaurants, k, max_updates=100):
@@ -68,9 +69,10 @@ def k_means(restaurants, k, max_updates=100):
 
     while old_centroids != centroids and n < max_updates:
         old_centroids = centroids
-        # BEGIN Question 6
-        "*** REPLACE THIS LINE ***"
-        # END Question 6
+        cluster = group_by_centroid(restaurants,old_centroids)
+        centroids = [find_centroid(r) for r in cluster if len(r)!= 0]
+        
+        
         n += 1
     return centroids
 
