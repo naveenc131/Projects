@@ -98,15 +98,14 @@ def find_predictor(user, restaurants, feature_fn):
 
     xs = [feature_fn(r) for r in restaurants]
     ys = [reviews_by_user[restaurant_name(r)] for r in restaurants]
-    xy = zip(xs, ys)
-    b, a, r_squared = 0, 0, 0  # REPLACE THIS LINE WITH YOUR SOLUTION
-    Sxx = sum([(x - mean(xs)) ** 2 for x in xs])
-    Syy = sum([(y - mean(ys)) ** 2 for y in ys])
-    Sxy = sum([(x - mean(xs)) * (y - mean(ys)) for x, y in xy])
-    b = Sxy / Sxx
-    a = mean(ys) - b * mean(xs)
-    rsquare = Sxy * Sxy / (Sxx * Syy)
-    r_squared = math.sqrt(rsquare) 
+    mean_x=mean(xs)
+    mean_y=mean(ys)
+    S_xx = sum([pow(x-mean_x,2) for x in xs])
+    S_yy = sum([pow(y-mean_y,2) for y in ys])
+    S_xy = sum([(x-mean_x)*(y-mean_y) for x,y in zip(xs,ys)])
+    b=S_xy/S_xx
+    a=mean_y-b*mean_x
+    r_squared=pow(S_xy,2)/(S_xx*S_yy)
     def predictor(restaurant):
         return b * feature_fn(restaurant) + a
 
@@ -122,11 +121,10 @@ def best_predictor(user, restaurants, feature_fns):
     restaurants -- A list of restaurants
     feature_fns -- A sequence of functions that each takes a restaurant
     """
-    reviewed = user_reviewed_restaurants(user, restaurants)
-    # BEGIN Question 8
-    "*** REPLACE THIS LINE ***"
-    # END Question 8
-
+    reviewed = list(user_reviewed_restaurants(user, restaurants))
+    
+    best = [find_predictor(user,reviewed,feature_fn) for feature_fn in feature_fns]
+    return max(best,key=lambda x:x[1])[0]
 
 def rate_all(user, restaurants, feature_fns):
     """Return the predicted ratings of restaurants by user using the best
@@ -139,9 +137,15 @@ def rate_all(user, restaurants, feature_fns):
     """
     predictor = best_predictor(user, ALL_RESTAURANTS, feature_fns)
     reviewed = user_reviewed_restaurants(user, restaurants)
-    # BEGIN Question 9
-    "*** REPLACE THIS LINE ***"
-    # END Question 9
+    d = {}
+    
+    for r in restaurants:
+      if r in reviewed:
+        d[restaurant_name(r)] = user_rating(user, restaurant_name(r))
+      else:
+        d[restaurant_name(r)] = predictor(r)
+    
+    return d
 
 
 def search(query, restaurants):
@@ -151,9 +155,7 @@ def search(query, restaurants):
     query -- A string
     restaurants -- A sequence of restaurants
     """
-    # BEGIN Question 10
-    "*** REPLACE THIS LINE ***"
-    # END Question 10
+    return[r for r in restaurants if query in restaurant_categories(r)]
 
 
 def feature_set():
